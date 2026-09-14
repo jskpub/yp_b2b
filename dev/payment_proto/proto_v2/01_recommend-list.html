@@ -110,25 +110,23 @@
 				<nav class="breadcrumb" aria-label="현재 위치"><a href="#">홈</a><span aria-hidden="true">›</span><span
 						aria-current="page">추천도서</span></nav>
 				<h1 class="page-title">추천도서</h1>
-				<!-- 페이지 설명 영역 -->
+				<!--------------------------------------  페이지 설명 영역 -->
 				<div class="demo-panel">
-					<div class="demo-panel__title">🔧 프로토타입 데모 컨트롤 — 실제 화면에는 노출되지 않음</div>
+					<div class="demo-panel__title">※ 프로토타입 설명 — 실제 화면에는 노출되지 않음</div>
 					<div class="demo-row">
-						<label id="priceLabel">도서 판매가</label>
-						<div class="seg" role="radiogroup" aria-labelledby="priceLabel">
-							<button type="button" data-price="15000" aria-pressed="true">15,000원</button>
-							<button type="button" data-price="20000" aria-pressed="false">20,000원</button>
-							<button type="button" data-price="30000" aria-pressed="false">30,000원</button>
-						</div>
-					</div>
-					<div class="demo-row">
-						<label id="limitLabel">월 1권 상태</label>
-						<div class="seg" role="radiogroup" aria-labelledby="limitLabel">
-							<button type="button" data-limit="ok" aria-pressed="true">신청 가능</button>
-							<button type="button" data-limit="blocked" aria-pressed="false">이미 신청함(소진)</button>
-						</div>
+						<ul>
+							<li>- "지원금 100%" 고정 배지 표시 (<span
+									style="text-decoration: underline; font-style: italic; font-weight: 900;">프로토타입 확인용 - 배지 필요없어도 될
+									듯함</span>)</li>
+							<li>- 책 클릭하면 <b>추천도서 상세(02_recommend-detail.html)</b>로 이동</li>
+							<li>- 상단 nav "개인도서 신청" 클릭 → <b>03_personal-list.html</b>로 이동</li>
+							<li>- 좌측 상단 "마이페이지" / nav "나의 신청내역" 클릭 → <b>08_mypage.html</b>로 이동</li>
+							<li>- 헤더의 검색창·장바구니 아이콘·"홍길동 님" 표시는 장식용이며 클릭해도 동작하지 않음 (프로토타입 범위 외)</li>
+							<li>- 이 페이지 자체에는 열리는 팝업 없음 (팝업은 상세 페이지부터 등장)</li>
+						</ul>
 					</div>
 				</div>
+				<!-- // ------------------------------------ 페이지 설명 영역 -->
 				<div class="scope-banner">
 					<span aria-hidden="true">🧩</span>
 					<div>이 화면의 카드 레이아웃·필터·정렬·페이지네이션 등 일반 UI는 <strong>별도 작업자 담당</strong> 영역입니다. 이 프로토타입은 지원금_rule.md §3.1에 정의된 지원금

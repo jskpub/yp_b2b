@@ -86,6 +86,18 @@
         <div>개인정보 탭 등 마이페이지 일반 영역은 <strong>별도 담당</strong>이며, 이 프로토타입은 복합결제_통합정리.md §3 Page 4 기준 <strong>지원금 현황 / 구매내역 / 환불·취소</strong> 3개 탭만 반영합니다.</div>
       </div>
 
+      <div class="demo-panel">
+        <div class="demo-panel__title">※ 프로토타입 설명 — 실제 화면에는 노출되지 않음</div>
+        <div class="demo-row">
+          <ul>
+            <li>- 상단 3개 탭(지원금 현황/구매내역/환불·취소) 클릭 시 페이지 이동 없이 같은 화면에서 내용만 전환됨</li>
+            <li>- "구매내역" 탭의 정렬(최신순/오래된순) select를 바꾸면 목록 순서가 즉시 재정렬됨(서버 호출 없음), [상세보기] 링크는 실제로 이동하지 않는 더미 링크</li>
+            <li>- "환불·취소" 탭에서 [환불 신청] 클릭 → <b>"환불을 신청하시겠습니까?"</b> 확인 팝업 → [환불 신청] 클릭 시 <b>"환불이 신청되었습니다"</b> 완료 팝업 + 목록의 버튼이 "환불 진행중" 배지로 즉시 교체</li>
+            <li>- "환불 불가" 상태인 아몬드 항목은 버튼이 아예 없어 클릭해도 아무 반응이 없음</li>
+          </ul>
+        </div>
+      </div>
+
       <div class="mypage-tabs" role="tablist" aria-label="마이페이지 탭">
         <button class="mypage-tab" role="tab" id="tabBtnSubsidy" aria-selected="true" aria-controls="panelSubsidy">💰 지원금 현황</button>
         <button class="mypage-tab" role="tab" id="tabBtnHistory" aria-selected="false" aria-controls="panelHistory">📦 구매내역</button>
