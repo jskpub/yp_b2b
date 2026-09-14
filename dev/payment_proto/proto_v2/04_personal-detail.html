@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="개인도서 상세 - 지원금 실시간 계산·월 남은 지원금·월1권 체크 프로토타입">
+<title>개인도서 상세 | 영풍문고 B2B 독서지원</title>
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdnjs.cloudflare.com/ajax/libs/pretendard-gov/1.3.9/variable/pretendardvariable-gov.min.css">
+<link rel="stylesheet" href="common.css">
+<style>
+  .book-main .inner { padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-3xl); }
+  .book-layout { display: grid; grid-template-columns: 320px 1fr; gap: var(--spacing-2xl); align-items: start; }
+  .book-cover__img {
+    width: 100%; aspect-ratio: 3/4.2; border-radius: 12px; border: 1px solid var(--color-border);
+    background: linear-gradient(135deg, var(--cgrey01), var(--wgrey02));
+    display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: var(--font-size-body-sm);
+  }
+  .book-info h1 { font-size: var(--font-size-h1); font-weight: 700; margin-bottom: 8px; }
+  .book-info__meta { font-size: var(--font-size-body-md); color: var(--color-foreground-secondary); margin-bottom: var(--spacing-lg); }
+
+  .format-options { display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
+  .format-option {
+    flex: 1; border: 1px solid var(--color-border); border-radius: 8px; padding: var(--spacing-md) var(--spacing-lg);
+    cursor: pointer; display: flex; align-items: center; gap: var(--spacing-sm); background: var(--white);
+  }
+  .format-option[aria-pressed="true"] { border: 2px solid var(--color-primary); background: var(--color-primary-soft); }
+  .format-option__title { font-weight: 600; }
+
+  .calc-block { background: var(--color-surface-alt); border-radius: 10px; padding: var(--spacing-lg) var(--spacing-xl); margin-bottom: var(--spacing-lg); }
+  .calc-block__row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: var(--font-size-body-md); }
+  .calc-block__row.divider { border-top: 1px solid var(--color-border-strong); margin-top: 4px; padding-top: 10px; }
+  .calc-block__row dt { color: var(--color-foreground-secondary); }
+  .calc-block__row dd { font-weight: 700; }
+  .calc-block__row dd.subsidy { color: var(--color-success); }
+  .calc-block__row dd.pay { color: var(--color-primary); font-size: var(--font-size-h4); }
+
+  .remain-block { margin-bottom: var(--spacing-lg); }
+  .remain-block__top { display: flex; justify-content: space-between; font-size: var(--font-size-body-sm); margin-bottom: 6px; }
+  .remain-block__top strong { color: var(--color-foreground); }
+
+  .limit-status { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md) var(--spacing-lg); border-radius: 8px; background: var(--color-surface); margin-bottom: var(--spacing-lg); }
+  .limit-status__value { display: flex; align-items: center; gap: 6px; font-weight: 700; }
+  .limit-status__value.ok { color: var(--color-success); }
+  .limit-status__value.blocked { color: var(--color-danger); }
+  .limit-status__dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  .purchase-actions { display: flex; gap: var(--spacing-md); }
+  .purchase-actions .btn { flex: 1; }
+
+  .demo-panel { margin-bottom: var(--spacing-2xl); border: 2px dashed var(--cgrey04); border-radius: 10px; background: var(--wgrey01); padding: var(--spacing-lg) var(--spacing-xl); }
+  .demo-panel__title { font-size: var(--font-size-body-md); font-weight: 700; color: var(--cgrey08); margin-bottom: var(--spacing-md); }
+  .demo-row { display: flex; align-items: center; gap: var(--spacing-lg); flex-wrap: wrap; margin-bottom: var(--spacing-sm); }
+  .demo-row label { font-size: var(--font-size-body-sm); font-weight: 600; min-width: 110px; }
+  .demo-row input[type="number"] { width: 110px; height: 34px; border: 1px solid var(--color-border); border-radius: 6px; padding: 0 10px; font-family: inherit; }
+  .demo-row .seg { display: flex; gap: 6px; }
+  .demo-row .seg button { border: 1px solid var(--color-border-strong); background: var(--white); border-radius: 6px; padding: 6px 12px; font-size: var(--font-size-body-sm); cursor: pointer; }
+  .demo-row .seg button[aria-pressed="true"] { background: var(--color-foreground); color: var(--white); border-color: var(--color-foreground); }
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">본문 바로가기</a>
+<div class="wrap">
+  <header role="banner">
+    <div class="site-header__top"><div class="inner"><a href="08_mypage.html">마이페이지</a><a href="#">고객센터</a><a href="#">로그아웃</a></div></div>
+    <div class="site-header__main">
+      <div class="inner">
+        <a href="#" class="brand" aria-label="영풍문고 B2B 독서지원 홈으로 이동">
+          <span class="brand__mark" aria-hidden="true">영풍</span><span class="brand__name">영풍문고</span><span class="brand__sub">B2B 임직원 독서지원</span>
+        </a>
+        <div class="header-search" role="search"><input type="text" placeholder="도서명, 저자, ISBN으로 검색" aria-label="도서 검색"><button type="button" aria-label="검색">🔍</button></div>
+        <div class="header-utils">
+          <div class="header-utils__item" role="button" tabindex="0"><span class="icon" aria-hidden="true">🛒</span><span>장바구니</span></div>
+          <div class="header-utils__item" role="button" tabindex="0"><span class="icon" aria-hidden="true">👤</span><span>홍길동 님</span></div>
+        </div>
+      </div>
+    </div>
+    <nav class="site-header__nav" aria-label="메인 네비게이션">
+      <div class="inner"><a href="01_recommend-list.html">추천도서</a><a href="03_personal-list.html" aria-current="page">개인도서 신청</a><a href="#">이용안내</a><a href="08_mypage.html">나의 신청내역</a></div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="book-main">
+    <div class="inner">
+      <nav class="breadcrumb" aria-label="현재 위치"><a href="#">홈</a><span aria-hidden="true">›</span><a href="03_personal-list.html">개인도서</a><span aria-hidden="true">›</span><span aria-current="page">상세</span></nav>
+
+      <div class="scope-banner">
+        <span aria-hidden="true">🧩</span>
+        <div>도서 이미지·기본정보·설명·공개 서평 레이아웃은 <strong>별도 작업자 담당</strong> 영역입니다. 이 프로토타입은 지원금_rule.md §3.4의 종이/전자 재계산, 지원금 계산 블록, 월 남은 지원금 진행률, 월1권 체크만 반영합니다.</div>
+      </div>
+
+      <div class="demo-panel">
+        <div class="demo-panel__title">🔧 프로토타입 데모 컨트롤 — 실제 화면에는 노출되지 않음</div>
+        <div class="demo-row">
+          <label for="demoPrice">도서 판매가</label>
+          <input type="number" id="demoPrice" value="20000" step="1000" min="0">
+        </div>
+        <div class="demo-row">
+          <label id="limitLabel">월 1권 / 지원금 상태</label>
+          <div class="seg" role="radiogroup" aria-labelledby="limitLabel">
+            <button type="button" data-limit="ok" aria-pressed="true">지원금 남음</button>
+            <button type="button" data-limit="blocked" aria-pressed="false">이 달 지원금 소진</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-layout">
+        <div class="book-cover__img" aria-hidden="true">도서 표지 이미지</div>
+        <div class="book-info">
+          <span class="badge badge--personal">📗 개인도서</span>
+          <h1 style="margin-top:10px;">모순</h1>
+          <div class="book-info__meta">양귀자 지음 · 쓰다</div>
+
+          <div class="format-options" role="radiogroup" aria-label="종이책 또는 전자책 선택">
+            <div class="format-option" role="radio" aria-checked="true" aria-pressed="true" tabindex="0" data-format="paper">
+              <span class="format-option__title">📕 종이책</span>
+            </div>
+            <div class="format-option" role="radio" aria-checked="false" aria-pressed="false" tabindex="0" data-format="ebook">
+              <span class="format-option__title">📱 전자책</span>
+            </div>
+          </div>
+
+          <div class="calc-block" role="group" aria-label="지원금 계산 결과">
+            <dl class="calc-block__row"><dt>도서 가격</dt><dd id="valPrice">20,000원</dd></dl>
+            <dl class="calc-block__row"><dt>회사 지원금</dt><dd class="subsidy" id="valSubsidy">10,000원</dd></dl>
+            <dl class="calc-block__row divider"><dt>직원 부담금</dt><dd class="pay" id="valPay">10,000원</dd></dl>
+          </div>
+
+          <div class="remain-block">
+            <div class="remain-block__top"><span>월 남은 지원금 (한도 10,000원)</span><strong id="remainText">0원 남음</strong></div>
+            <div class="limit-progress" role="img" aria-label="월 지원금 사용률">
+              <div class="limit-progress__fill" id="remainFill" style="width:100%"></div>
+            </div>
+          </div>
+
+          <div class="limit-status">
+            <span>지원금 사용 가능 여부</span>
+            <span class="limit-status__value ok" id="limitValue"><span class="limit-status__dot" aria-hidden="true"></span>사용 가능</span>
+          </div>
+
+          <div class="purchase-actions">
+            <button type="button" class="btn btn--secondary btn--lg" id="btnCart">장바구니 추가</button>
+            <button type="button" class="btn btn--primary btn--lg" id="btnBuy">바로구매</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" role="contentinfo"><div class="inner"><span>© 영풍문고 B2B 임직원 독서지원 플랫폼 (프로토타입 v2)</span><span>고객센터 1544-9020</span></div></footer>
+</div>
+
+<div class="modal-overlay" id="modalBlocked" hidden role="dialog" aria-modal="true" aria-labelledby="modalBlockedTitle">
+  <div class="modal-box">
+    <div class="modal-box__icon modal-box__icon--warning" aria-hidden="true">⛔</div>
+    <div class="modal-box__title" id="modalBlockedTitle">이 달 지원금을 모두 사용하셨습니다</div>
+    <p class="modal-box__desc">장바구니 추가 및 구매 진행이 제한됩니다. 다음 달 1일 초기화 이후 다시 이용해 주세요.<br><span style="font-size:var(--font-size-caption); color:var(--color-muted);">(문구는 추정치 · 원문에 확정 카피 없음 · 확인 필요)</span></p>
+    <div class="modal-box__actions"><button type="button" class="btn btn--primary btn--block" id="btnCloseBlocked">확인</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAdded" hidden role="dialog" aria-modal="true" aria-labelledby="modalAddedTitle">
+  <div class="modal-box">
+    <div class="modal-box__icon modal-box__icon--success" aria-hidden="true">✓</div>
+    <div class="modal-box__title" id="modalAddedTitle">장바구니에 담았습니다</div>
+    <p class="modal-box__desc">장바구니에서 다른 도서와 함께 결제 금액을 확인할 수 있습니다.</p>
+    <div class="modal-box__actions">
+      <button type="button" class="btn btn--secondary" id="btnKeepShopping">계속 둘러보기</button>
+      <a href="05_cart.html" class="btn btn--primary">장바구니 보기</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const won = n => n.toLocaleString('ko-KR') + '원';
+  const state = { format: 'paper', price: 20000, limit: 'ok' };
+
+  document.querySelectorAll('[data-format]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.format = el.dataset.format;
+      document.querySelectorAll('[data-format]').forEach(o => { o.setAttribute('aria-pressed', o === el); o.setAttribute('aria-checked', o === el); });
+    });
+  });
+  document.querySelectorAll('[data-limit]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.limit = b.dataset.limit;
+      document.querySelectorAll('[data-limit]').forEach(x => x.setAttribute('aria-pressed', x === b));
+      render();
+    });
+  });
+  document.getElementById('demoPrice').addEventListener('input', e => { state.price = Number(e.target.value) || 0; render(); });
+
+  function render() {
+    const subsidy = Math.min(state.price * 0.5, 10000);
+    const pay = state.price - subsidy;
+    document.getElementById('valPrice').textContent = won(state.price);
+    document.getElementById('valSubsidy').textContent = won(subsidy);
+    document.getElementById('valPay').textContent = won(pay);
+
+    const usedRatio = state.limit === 'blocked' ? 100 : Math.min(100, (subsidy / 10000) * 100);
+    const remain = state.limit === 'blocked' ? 0 : Math.max(0, 10000 - subsidy);
+    document.getElementById('remainFill').style.width = usedRatio + '%';
+    document.getElementById('remainText').textContent = won(remain) + ' 남음';
+
+    const ok = state.limit === 'ok';
+    const lv = document.getElementById('limitValue');
+    lv.className = 'limit-status__value ' + (ok ? 'ok' : 'blocked');
+    lv.innerHTML = '<span class="limit-status__dot" aria-hidden="true"></span>' + (ok ? '사용 가능' : '소진됨');
+  }
+
+  function tryAction(cb) {
+    if (state.limit === 'ok') cb();
+    else document.getElementById('modalBlocked').hidden = false;
+  }
+  document.getElementById('btnCart').addEventListener('click', () => tryAction(() => { document.getElementById('modalAdded').hidden = false; }));
+  document.getElementById('btnBuy').addEventListener('click', () => tryAction(() => { window.location.href = '05_cart.html'; }));
+  document.getElementById('btnCloseBlocked').addEventListener('click', () => { document.getElementById('modalBlocked').hidden = true; });
+  document.getElementById('btnKeepShopping').addEventListener('click', () => { document.getElementById('modalAdded').hidden = true; });
+
+  render();
+})();
+</script>
+</body>
+</html>
